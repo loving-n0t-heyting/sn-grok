@@ -2,7 +2,7 @@ from itertools import pairwise
 import torch
 from torch import nn
 from torch.nn.functional import relu, gelu, silu
-from transformer_lens.hook_points import HookedRootModule, HookPoint
+from transformer_lens import HookedRootModule, HookPoint
 
 
 activation_functions = {
