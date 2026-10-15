@@ -1,7 +1,8 @@
 import torch
 from torch import nn
 from torch.nn.functional import relu
-from transformer_lens.hook_points import HookedRootModule, HookPoint
+from transformer_lens import HookedRootModule
+from transformer_lens.hook_points import HookPoint
 
 from .mlp import SnMLP
 
