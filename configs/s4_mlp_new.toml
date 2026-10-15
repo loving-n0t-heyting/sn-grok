@@ -11,7 +11,7 @@ checkpoint_dir = "checkpoints"
 run_dir = "s4_new_50"
 
 [group]
-@groups = "ProdSn"
+@groups = "Sn"
 n = 4
 
 [model]
