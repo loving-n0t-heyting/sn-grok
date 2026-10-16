@@ -87,7 +87,7 @@ def train_test_split(df, frac_train, seed):
         df
         .with_row_index()
         .with_columns(
-            pl.when(pl.col('index').is_in(train_split.to_split()))
+            pl.when(pl.col('index').is_in(train_split.to_list()))
             .then(pl.lit(1))
             .otherwise(pl.lit(0))
             .alias('in_train')
