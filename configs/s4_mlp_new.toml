@@ -7,7 +7,7 @@ checkpoint_every = 10000
 extra_checkpoints = [2, 4, 8, 16, 32, 64, 128, 512]
 device = "cuda"
 seed = 0
-checkpoint_dir = "checkpoints"
+checkpoint_dir = "/content/drive/MyDrive/sn-grok/checkpoints"
 run_dir = "s4_new_50"
 
 [group]
