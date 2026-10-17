@@ -72,6 +72,7 @@ def fourier_analysis(model, group, epoch):
     df.insert_at_idx(0, pl.Series('epoch', [epoch] * df.shape[0]))
     return df, lpowers, rpowers, unembed
 
+import numpy as np
 
 def train_test_split(df, frac_train, seed):
     group_order = df.shape[0]
@@ -83,17 +84,9 @@ def train_test_split(df, frac_train, seed):
             with_replacement=False,
             seed=seed)
     )
-    return (
-        df
-        .with_row_index()
-        .with_columns(
-            pl.when(pl.col('index').is_in(train_split.to_list()))
-            .then(pl.lit(1))
-            .otherwise(pl.lit(0))
-            .alias('in_train')
-        )
-        .select(pl.exclude('row_nr'))
-    )
+    mask = np.zeros(group_order, dtype=np.int8)
+    mask[train_split.to_numpy()] = 1
+    return df.with_columns(pl.Series('in_train', mask))
 
 
 def get_dataloaders(group_mult_table, config, seed, device):
