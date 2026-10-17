@@ -29,6 +29,6 @@ betas = [0.9, 0.98]
 
 
 [wandb]
-entity = "leonamollica"
+entity = "leonamollica-leonine-industries"
 group = "S4_new_50pcnt"
 project = "grokking_sn"
