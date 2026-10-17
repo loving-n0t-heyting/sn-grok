@@ -71,12 +71,12 @@ def _all_data_coset_analysis(data, coset_df):
     base_df = (
         data
         .melt(id_vars=['layer', 'permutation', 'irrep'])
-        .groupby(['layer', 'permutation', 'variable'])
+        .group_by(['layer', 'permutation', 'variable'])
         .agg(pl.col('value').sum())
     )
     summary_df = (
         base_df
-        .groupby(['layer', 'variable'])
+        .group_by(['layer', 'variable'])
         .agg([
             pl.col('value').mean().alias('mean'),
             pl.col('value').min().alias('min'),
@@ -90,7 +90,7 @@ def _all_data_coset_analysis(data, coset_df):
         base_df
         ##### Join against _all_ cosets, this is a many-to-1 join
         .join(coset_df, on='permutation', how='inner')
-        .groupby(['layer', 'variable', 'subgroup', 'coset_rep'])
+        .group_by(['layer', 'variable', 'subgroup', 'coset_rep'])
         .agg([
             # Get the average value and variance of the (per dim) activations over a single coset
             # Small variance --> activations highly concentrated on the coset
@@ -98,12 +98,12 @@ def _all_data_coset_analysis(data, coset_df):
             pl.col('value').mean().alias('coset_mean')
         ])
         .sort(['variable', 'subgroup', 'coset_rep'])
-        .groupby(['layer', 'variable', 'subgroup'], maintain_order=True)
+        .group_by(['layer', 'variable', 'subgroup'], maintain_order=True)
         # Sum all the variances of the cosets for one subgroup
         .agg(pl.col('coset_var').sum().alias('coset_cond_var'))
         # Sort ascending by coset variance
         .sort(['variable', 'coset_cond_var'])
-        .groupby(['layer', 'variable'], maintain_order=True)
+        .group_by(['layer', 'variable'], maintain_order=True)
         .agg([
             # 
             pl.col('subgroup').first(),
