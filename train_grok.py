@@ -92,13 +92,22 @@ def train_test_split(df, frac_train, seed):
 def get_dataloaders(group_mult_table, config, seed, device):
     frac_train = config['frac_train']
     group_mult_table = train_test_split(group_mult_table, frac_train, seed)
-    sn_split = group_mult_table.partition_by('in_train', as_dict=True)
-    train_lperms = torch.as_tensor(sn_split[1].select('index_left').to_numpy(), dtype=torch.int64, device=device)
-    train_rperms = torch.as_tensor(sn_split[1].select('index_right').to_numpy(), dtype=torch.int64, device=device)
-    train_targets = torch.as_tensor(sn_split[1].select('index_target').to_numpy(), dtype=torch.int64, device=device)
-    test_lperms = torch.as_tensor(sn_split[0].select('index_left').to_numpy(), dtype=torch.int64, device=device)
-    test_rperms = torch.as_tensor(sn_split[0].select('index_right').to_numpy(), dtype=torch.int64, device=device)
-    test_targets = torch.as_tensor(sn_split[0].select('index_target').to_numpy(), dtype=torch.int64, device=device)
+
+    train_df = group_mult_table.filter(pl.col('in_train') == 1)
+    test_df  = group_mult_table.filter(pl.col('in_train') == 0)
+    print('train pairs:', train_df.height, '| test pairs:', test_df.height)
+    assert train_df.height > 0 and test_df.height > 0, (train_df.height, test_df.height)
+
+    def tensors(frame):
+        return (
+            torch.as_tensor(frame.select('index_left').to_numpy(),   dtype=torch.int64, device=device),
+            torch.as_tensor(frame.select('index_right').to_numpy(),  dtype=torch.int64, device=device),
+            torch.as_tensor(frame.select('index_target').to_numpy(), dtype=torch.int64, device=device),
+        )
+
+    train_lperms, train_rperms, train_targets = tensors(train_df)
+    test_lperms,  test_rperms,  test_targets  = tensors(test_df)
+    
     train_data = TensorDataset(train_lperms, train_rperms, train_targets)
     test_data = TensorDataset(test_lperms, test_rperms, test_targets)
     train_dataloader = DataLoader(train_data, batch_size=config['batch_size'], pin_memory=False)
